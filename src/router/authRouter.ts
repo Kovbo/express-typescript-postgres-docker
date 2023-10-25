@@ -20,13 +20,15 @@ authRouter.get("/login", (req, res, next) => {
 
 // Since we are using the passport.authenticate() method, we should be redirected no matter what
 
-authRouter.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/login-success",
-    failureRedirect: "/login-failure",
-  })
-);
+authRouter.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user) => {
+    if (err) console.error(err);
+
+    req.login(user, () => {
+      return res.json(user);
+    });
+  })(req, res);
+});
 
 authRouter.post("/currentUser", (req, res) => {
   return res.json({ user: req.user });
